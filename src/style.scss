@@ -1,0 +1,297 @@
+*,
+::before,
+::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: sans-serif;
+  min-height: 100vh;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  background-color: #000;
+}
+
+main {
+  background-image: url(https://images.unsplash.com/photo-1603190287605-e6ade32fa852);
+  background-size: cover;
+  background-position: center bottom;
+  background-attachment: fixed;
+  flex: 1;
+  padding: 4rem 2rem;
+
+  @media (width < 800px) {
+    padding: 1rem 4rem 0.5rem 1rem;
+  }
+}
+
+section {
+  background: #fff;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 700px;
+  padding: 3rem 4rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgb(0 0 0 /0.2);
+
+  @media (width < 800px) {
+    padding: 1.5rem 2rem;
+  }
+
+  h1 {
+    font-family: serif;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+
+    @media (width < 800px) {
+      margin-bottom: 1rem;
+    }
+  }
+
+  p {
+    line-height: 1.6;
+
+    & + p {
+      margin-top: 2rem;
+
+      @media (width < 800px) {
+        margin-top: 1rem;
+      }
+    }
+  }
+}
+
+a,
+button {
+  text-decoration: none;
+  color: #000;
+  line-height: 1;
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+}
+
+button {
+  display: inline;
+  background: transparent;
+  position: relative;
+  z-index: 99;
+  border: 0;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+ul,
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  background: #fff;
+}
+
+nav {
+  z-index: 9999;
+  position: fixed;
+  width: 100%;
+}
+
+.menu {
+  display: flex;
+  gap: 20px;
+  padding: 0 10px;
+  box-shadow: 0 0 10px rgb(0 0 0 /0.2);
+
+  > li {
+    a,
+    button {
+      display: block;
+      padding: 10px;
+
+      &:hover {
+        background: #eee;
+      }
+    }
+  }
+
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgb(0 0 0/0);
+    pointer-events: none;
+    will-change: backdrop-filter;
+    transition: background-color 0.15s ease-in-out, backdrop-filter 0.15s ease-in-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    &--open {
+      background-color: rgb(0 0 0/0.15);
+      backdrop-filter: blur(3px);
+    }
+  }
+
+  li {
+    position: relative;
+
+    &.subnav-container button {
+      display: flex;
+      gap: 0.5em;
+    }
+
+    &.subnav-container button::after {
+      content: ' \21E3';
+      transition: scale 0.15s ease-in-out;
+
+      @media (prefers-reduced-motion: no-motion) {
+        transition: none;
+      }
+    }
+
+    &.subnav-container button[aria-expanded='true']::after {
+      scale: 1 -1;
+    }
+  }
+}
+
+.subnav {
+  position: absolute;
+  top: 100%;
+  display: flex;
+  flex-direction: column;
+  transform-origin: top center;
+  border-radius: 0 0 0.25rem 0.25rem;
+  overflow: hidden;
+  transition: opacity 0.15s ease-in-out, translate 0.15s ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &.subnav--closed {
+    opacity: 0;
+    translate: 0 -20px;
+    pointer-events: none;
+  }
+
+  li {
+    display: block;
+
+    a {
+      min-width: max-content;
+      display: block;
+      padding: 15px 15px 15px 10px;
+      transition: background-color 0.15s ease-in-out;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+
+      &:hover {
+        background-color: #eee;
+      }
+    }
+  }
+}
+
+.menu {
+  &__hamburger {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+    color: #000;
+    background-color: #fff;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+
+    &:hover {
+      background-color: #eee;
+    }
+  }
+
+  &.menu--mobile {
+    position: fixed;
+    inset: 4rem -100% auto auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0;
+    box-shadow: none;
+    transition: inset 0.15s ease-in-out;
+    text-align: right;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    > li > a,
+    > li > button {
+      padding: 1rem 3rem 1rem 1rem;
+    }
+
+    > li > ul a {
+      padding: 1rem 2rem 1rem 1rem;
+    }
+
+    > li {
+      button {
+        flex-direction: row-reverse;
+
+        &::after {
+          content: ' \21E3';
+          rotate: 90deg;
+          transition: scale 0.15s ease-in-out;
+
+          @media (prefers-reduced-motion: reduce) {
+            transition: none;
+          }
+        }
+
+        &[aria-expanded='true'] {
+          background-color: #eee;
+
+          &::after {
+            scale: -1;
+          }
+        }
+      }
+    }
+
+    &::before {
+      content: '';
+      inset: 0;
+      position: absolute;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgb(0 0 0 /0.2);
+    }
+
+    > li .subnav {
+      z-index: -1;
+      top: 0;
+      right: 100%;
+      scale: 1;
+      transform-origin: top right;
+      box-shadow: 0 0 10px rgb(0 0 0 /0.2);
+      gap: 8px;
+
+      &--closed {
+        opacity: 0;
+        translate: 20px 0;
+        pointer-events: none;
+      }
+    }
+  }
+
+  &.menu--mobile.menu--open {
+    inset: 4rem 0 auto auto;
+  }
+}
