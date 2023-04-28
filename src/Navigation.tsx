@@ -120,18 +120,25 @@ const Navigation = ({ navItems }: IProps): JSX.Element => {
         const btn = document.querySelector('.menu__hamburger')
         const backdrop = document.querySelector('#menu__backdrop')
         const urls = document.querySelectorAll('nav ul.menu > li > a, nav ul.menu > li > button')
+        const subNavUrls = document.querySelectorAll('nav ul.menu > li > ul > li > a, nav ul.menu > li > ul > li > button')
 
         menu?.classList.remove('menu--open')
         menu?.setAttribute('aria-hidden', 'true')
         btn?.setAttribute('aria-expanded', 'false')
         btn?.setAttribute('aria-label', 'Open navigation')
         backdrop?.classList.remove('menu__backdrop--open')
-        urls.forEach((url) => url.setAttribute('tabindex', '-1'))
+
+        if (isMobile) {
+          urls.forEach((url) => url.setAttribute('tabindex', '-1'))
+          subNavUrls.forEach((url) => url.setAttribute('tabindex', '-1'))
+        } else {
+          subNavUrls.forEach((url) => url.setAttribute('tabindex', '-1'))
+        }
 
         closeAll()
       }
     })
-  }, [closeAll])
+  }, [closeAll, isMobile])
 
   window.addEventListener('click', (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return
