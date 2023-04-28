@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { useState, useEffect, useCallback } from 'react'
 import { TNavItems } from './navItems'
 
 // TODO: Optimize code, 'cause holy fugg...!
@@ -8,14 +9,10 @@ interface IProps {
 }
 
 const Navigation = ({ navItems }: IProps): JSX.Element => {
-  if (!navItems.length) {
-    return <></>
-  }
-
   const [isMobile, isMobileSet] = useState(false)
 
   // Sort by order
-  const sortByKeyValue = (array: any[], key: string) => [...array].sort((a, b) => a[key] - b[key])
+  const sortByKeyValue = (array: TNavItems[]) => [...array].sort((a, b) => a.order - b.order)
 
   // Add slug to each item
   navItems.forEach((item) => {
@@ -32,7 +29,7 @@ const Navigation = ({ navItems }: IProps): JSX.Element => {
     }
   })
 
-  const closeAll = () => {
+  const closeAll = useCallback(() => {
     document.querySelectorAll('li[data-identifier]').forEach((nav) => close(nav))
     const backdrop = document.querySelector('#menu__backdrop')
     backdrop?.classList.remove('menu__backdrop--open')
@@ -40,7 +37,7 @@ const Navigation = ({ navItems }: IProps): JSX.Element => {
     if (isMobile && document.querySelector('.menu--open')) {
       document.querySelector('.menu--open')?.classList.remove('menu--open')
     }
-  }
+  }, [isMobile])
 
   const close = (nav: Element) => {
     const btn = nav.querySelector('button')
@@ -80,9 +77,7 @@ const Navigation = ({ navItems }: IProps): JSX.Element => {
 
     const nav: HTMLElement = target.closest('[data-identifier]')!
     const identifier = nav?.getAttribute('data-identifier')
-    const otherNavs = nav
-      ?.closest('ul')
-      ?.querySelectorAll(`li[data-identifier]:not([data-identifier='${identifier}']`)
+    const otherNavs = nav?.closest('ul')?.querySelectorAll(`li[data-identifier]:not([data-identifier='${identifier}']`)
 
     const shouldOpen = nav?.querySelector('ul')?.matches('.subnav--closed')
 
@@ -136,7 +131,7 @@ const Navigation = ({ navItems }: IProps): JSX.Element => {
         closeAll()
       }
     })
-  }, [])
+  }, [closeAll])
 
   window.addEventListener('click', (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return
@@ -154,9 +149,7 @@ const Navigation = ({ navItems }: IProps): JSX.Element => {
 
     shouldOpen ? menu?.classList.add('menu--open') : menu?.classList.remove('menu--open')
 
-    shouldOpen
-      ? backdrop?.classList.add('menu__backdrop--open')
-      : backdrop?.classList.remove('menu__backdrop--open')
+    shouldOpen ? backdrop?.classList.add('menu__backdrop--open') : backdrop?.classList.remove('menu__backdrop--open')
 
     btn?.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false')
     menu?.setAttribute('aria-hidden', !shouldOpen ? 'true' : 'false')
@@ -174,44 +167,28 @@ const Navigation = ({ navItems }: IProps): JSX.Element => {
 
   return (
     <>
-      <div className='menu__backdrop' id='menu__backdrop'></div>
+      <div className="menu__backdrop" id="menu__backdrop"></div>
       <nav>
         {isMobile && (
-          <button
-            aria-label='Open navigation'
-            aria-controls='menu'
-            aria-expanded='false'
-            onClick={navHandler}
-            className='menu__hamburger'
-          >
+          <button aria-label="Open navigation" aria-controls="menu" aria-expanded="false" onClick={navHandler} className="menu__hamburger">
             ☰
           </button>
         )}
-        <ul className={`menu ${isMobile ? 'menu--mobile' : 'menu--desktop'}`} id='menu'>
-          {sortByKeyValue(navItems, 'order').map(({ title, children, slug }) => (
-            <li
-              key={slug}
-              {...(children && { 'data-identifier': slug })}
-              className={children && 'subnav-container'}
-            >
+        <ul className={`menu ${isMobile ? 'menu--mobile' : 'menu--desktop'}`} id="menu">
+          {sortByKeyValue(navItems).map(({ title, children, slug }) => (
+            <li key={slug} {...(children && { 'data-identifier': slug })} className={children && 'subnav-container'}>
               {!children ? (
                 <a href={`#/${slug}`} onClick={closeAll}>
                   {title}
                 </a>
               ) : (
-                <button
-                  aria-label={`Open subnavigation ${title}`}
-                  aria-controls={slug}
-                  aria-expanded='false'
-                  data-title={title}
-                  onClick={subnavHandler}
-                >
+                <button aria-label={`Open subnavigation ${title}`} aria-controls={slug} aria-expanded="false" data-title={title} onClick={subnavHandler}>
                   {title}
                 </button>
               )}
               {children && (
-                <ul className='subnav subnav--closed' id={slug} aria-hidden='true'>
-                  {sortByKeyValue(children, 'order').map(({ title: childTitle, slug: childSlug }) => (
+                <ul className="subnav subnav--closed" id={slug} aria-hidden="true">
+                  {sortByKeyValue(children).map(({ title: childTitle, slug: childSlug }) => (
                     <li key={`#/${childSlug}`} title={childSlug}>
                       <a href={`#/{childSlug}`} onClick={subnavHandler}>
                         {childTitle}
